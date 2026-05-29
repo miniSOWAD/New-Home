@@ -1,4 +1,3 @@
-import Link from "next/link";
 import {
   Ban,
   Eye,
@@ -30,52 +29,27 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table";
+import { EmptyState } from "@/components/shared/EmptyState";
 
-type ManagedUser = {
+export type ManagedUserItem = {
   id: string;
   name: string;
   email: string;
-  role: "CUSTOMER" | "PROVIDER" | "ADMIN";
-  status: "PENDING" | "APPROVED" | "SUSPENDED";
+  role: "SUPER_ADMIN" | "ADMIN" | "CUSTOMER" | "PROVIDER";
+  approvalStatus: "PENDING" | "APPROVED" | "REJECTED" | "SUSPENDED";
   joinedAt: string;
 };
 
-const users: ManagedUser[] = [
-  {
-    id: "user-001",
-    name: "Rahim Provider",
-    email: "rahim@newhome.com",
-    role: "PROVIDER",
-    status: "PENDING",
-    joinedAt: "May 29, 2026"
-  },
-  {
-    id: "user-002",
-    name: "Customer User",
-    email: "customer@newhome.com",
-    role: "CUSTOMER",
-    status: "APPROVED",
-    joinedAt: "May 25, 2026"
-  },
-  {
-    id: "user-003",
-    name: "Admin User",
-    email: "admin@newhome.com",
-    role: "ADMIN",
-    status: "APPROVED",
-    joinedAt: "May 20, 2026"
-  }
-];
+type UserManagementTableProps = {
+  users: ManagedUserItem[];
+  isLoading?: boolean;
+  onView?: (id: string) => void;
+  onApprove?: (id: string) => void;
+  onSuspend?: (id: string) => void;
+  onDelete?: (id: string) => void;
+};
 
-function getRoleBadge(role: ManagedUser["role"]) {
-  return (
-    <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-100">
-      {role}
-    </Badge>
-  );
-}
-
-function getStatusBadge(status: ManagedUser["status"]) {
+function getStatusBadge(status: ManagedUserItem["approvalStatus"]) {
   if (status === "APPROVED") {
     return (
       <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
@@ -92,6 +66,14 @@ function getStatusBadge(status: ManagedUser["status"]) {
     );
   }
 
+  if (status === "REJECTED") {
+    return (
+      <Badge className="bg-red-100 text-red-700 hover:bg-red-100">
+        Rejected
+      </Badge>
+    );
+  }
+
   return (
     <Badge className="bg-yellow-100 text-slate-900 hover:bg-yellow-100">
       Pending
@@ -99,7 +81,14 @@ function getStatusBadge(status: ManagedUser["status"]) {
   );
 }
 
-export function UserManagementTable() {
+export function UserManagementTable({
+  users,
+  isLoading = false,
+  onView,
+  onApprove,
+  onSuspend,
+  onDelete
+}: UserManagementTableProps) {
   return (
     <Card className="border-orange-100 bg-white shadow-sm">
       <CardHeader className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
@@ -107,6 +96,7 @@ export function UserManagementTable() {
           <p className="text-sm font-bold uppercase tracking-[0.25em] text-orange-400">
             Users
           </p>
+
           <CardTitle className="mt-1 text-2xl font-black text-slate-950">
             User Management
           </CardTitle>
@@ -114,73 +104,93 @@ export function UserManagementTable() {
 
         <Button className="rounded-2xl bg-yellow-400 font-black text-slate-950 hover:bg-yellow-300">
           <UserCheck className="mr-2 size-5" />
-          Add / Approve User
+          Manage Users
         </Button>
       </CardHeader>
 
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>User</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Joined</TableHead>
-              <TableHead className="w-[70px]">Action</TableHead>
-            </TableRow>
-          </TableHeader>
+        {isLoading ? (
+          <EmptyState
+            title="Loading users..."
+            description="Please wait while users are being fetched."
+          />
+        ) : users.length === 0 ? (
+          <EmptyState
+            title="No users found"
+            description="No user records are available right now."
+          />
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>User</TableHead>
+                <TableHead>Role</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Joined</TableHead>
+                <TableHead className="w-[70px]">Action</TableHead>
+              </TableRow>
+            </TableHeader>
 
-          <TableBody>
-            {users.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell>
-                  <div>
-                    <p className="font-black text-slate-950">{user.name}</p>
-                    <p className="mt-1 text-xs text-slate-500">{user.email}</p>
-                  </div>
-                </TableCell>
+            <TableBody>
+              {users.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell>
+                    <div>
+                      <p className="font-black text-slate-950">{user.name}</p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        {user.email}
+                      </p>
+                    </div>
+                  </TableCell>
 
-                <TableCell>{getRoleBadge(user.role)}</TableCell>
-                <TableCell>{getStatusBadge(user.status)}</TableCell>
-                <TableCell>{user.joinedAt}</TableCell>
+                  <TableCell>
+                    <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-100">
+                      {user.role}
+                    </Badge>
+                  </TableCell>
 
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="size-5" />
-                      </Button>
-                    </DropdownMenuTrigger>
+                  <TableCell>{getStatusBadge(user.approvalStatus)}</TableCell>
+                  <TableCell>{user.joinedAt}</TableCell>
 
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem asChild>
-                        <Link href={`/dashboard/super-admin/users/${user.id}`}>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="size-5" />
+                        </Button>
+                      </DropdownMenuTrigger>
+
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => onView?.(user.id)}>
                           <Eye className="mr-2 size-4" />
                           View Profile
-                        </Link>
-                      </DropdownMenuItem>
+                        </DropdownMenuItem>
 
-                      <DropdownMenuItem>
-                        <ShieldCheck className="mr-2 size-4 text-green-600" />
-                        Approve
-                      </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => onApprove?.(user.id)}>
+                          <ShieldCheck className="mr-2 size-4 text-green-600" />
+                          Approve
+                        </DropdownMenuItem>
 
-                      <DropdownMenuItem>
-                        <Ban className="mr-2 size-4 text-orange-600" />
-                        Suspend
-                      </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => onSuspend?.(user.id)}>
+                          <Ban className="mr-2 size-4 text-orange-600" />
+                          Suspend
+                        </DropdownMenuItem>
 
-                      <DropdownMenuItem className="text-red-600 focus:text-red-600">
-                        <Trash2 className="mr-2 size-4" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                        <DropdownMenuItem
+                          className="text-red-600 focus:text-red-600"
+                          onClick={() => onDelete?.(user.id)}
+                        >
+                          <Trash2 className="mr-2 size-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </CardContent>
     </Card>
   );
