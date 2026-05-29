@@ -1,0 +1,244 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  CUSTOMER
+  PROVIDER
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  COMPLETED
+  CANCELLED
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  RESOLVED
+  REJECTED
+}
+
+model User {
+  id              String         @id @default(cuid())
+  name            String
+  email           String         @unique
+  phone           String?
+  password        String
+  address         String?
+  avatarUrl       String?
+  role            UserRole       @default(CUSTOMER)
+  approvalStatus  ApprovalStatus @default(PENDING)
+  isEmailVerified Boolean        @default(false)
+
+  toletPosts        ToletPost[]
+  servicePosts      ServicePost[]
+  sentRequests      Request[] @relation("CustomerRequests")
+  receivedRequests  Request[] @relation("ProviderRequests")
+
+  reportsMade       Report[] @relation("ReportsMade")
+  reportsAgainst    Report[] @relation("ReportsAgainst")
+
+  reviewsGiven      Review[] @relation("ReviewsGiven")
+  reviewsReceived   Review[] @relation("ReviewsReceived")
+
+  sentMessages      Message[] @relation("SentMessages")
+  receivedMessages  Message[] @relation("ReceivedMessages")
+
+  notifications     Notification[]
+  auditLogs         AuditLog[]
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model ToletPost {
+  id             String         @id @default(cuid())
+  title          String
+  slug           String         @unique
+  description    String
+  category       String
+  propertyFor    String
+  rentAmount     Int
+  rentType       String         @default("Monthly")
+  advanceAmount  Int?
+  location       String
+  address        String
+  bedrooms       Int?
+  bathrooms      Int?
+  sizeSqft       Int?
+  facilities     String[]
+  images         String[]
+  availableFrom  DateTime?
+  approvalStatus ApprovalStatus @default(PENDING)
+  isAvailable    Boolean        @default(true)
+
+  providerId     String
+  provider       User           @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  requests       Request[]
+  reviews        Review[]
+  reports        Report[]
+
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model ServicePost {
+  id              String         @id @default(cuid())
+  title           String
+  slug            String         @unique
+  description     String
+  category        String
+  skills          String[]
+  experienceYears Int?
+  rateAmount      Int
+  rateType        String
+  location        String
+  availability    String[]
+  images          String[]
+  approvalStatus  ApprovalStatus @default(PENDING)
+  isAvailable     Boolean        @default(true)
+
+  providerId      String
+  provider        User           @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  requests        Request[]
+  reviews         Review[]
+  reports         Report[]
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model Request {
+  id            String        @id @default(cuid())
+  status        RequestStatus @default(PENDING)
+  message       String?
+
+  customerId    String
+  customer      User          @relation("CustomerRequests", fields: [customerId], references: [id], onDelete: Cascade)
+
+  providerId    String
+  provider      User          @relation("ProviderRequests", fields: [providerId], references: [id], onDelete: Cascade)
+
+  toletPostId   String?
+  toletPost     ToletPost?    @relation(fields: [toletPostId], references: [id], onDelete: Cascade)
+
+  servicePostId String?
+  servicePost   ServicePost?  @relation(fields: [servicePostId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Review {
+  id            String       @id @default(cuid())
+  rating        Int
+  comment       String?
+
+  reviewerId    String
+  reviewer      User         @relation("ReviewsGiven", fields: [reviewerId], references: [id], onDelete: Cascade)
+
+  targetUserId  String
+  targetUser    User         @relation("ReviewsReceived", fields: [targetUserId], references: [id], onDelete: Cascade)
+
+  toletPostId   String?
+  toletPost     ToletPost?   @relation(fields: [toletPostId], references: [id], onDelete: Cascade)
+
+  servicePostId String?
+  servicePost   ServicePost? @relation(fields: [servicePostId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model Report {
+  id             String       @id @default(cuid())
+  reason         String
+  description    String?
+  status         ReportStatus @default(PENDING)
+  adminNote      String?
+
+  reporterId     String
+  reporter       User         @relation("ReportsMade", fields: [reporterId], references: [id], onDelete: Cascade)
+
+  reportedUserId String?
+  reportedUser   User?        @relation("ReportsAgainst", fields: [reportedUserId], references: [id], onDelete: Cascade)
+
+  toletPostId    String?
+  toletPost      ToletPost?   @relation(fields: [toletPostId], references: [id], onDelete: Cascade)
+
+  servicePostId  String?
+  servicePost    ServicePost? @relation(fields: [servicePostId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Conversation {
+  id        String    @id @default(cuid())
+  messages  Message[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  body           String
+  isRead         Boolean      @default(false)
+
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  senderId       String
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+
+  receiverId     String
+  receiver       User         @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime     @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String
+  type      String
+  isRead    Boolean  @default(false)
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  action     String
+  resource   String
+  resourceId String?
+  details    String?
+
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  createdAt  DateTime @default(now())
+}
