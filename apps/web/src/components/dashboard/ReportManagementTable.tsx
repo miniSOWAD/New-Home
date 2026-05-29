@@ -28,44 +28,26 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table";
+import { EmptyState } from "@/components/shared/EmptyState";
 
-type ManagedReport = {
+export type ManagedReportItem = {
   id: string;
   reason: string;
-  target: string;
-  reporter: string;
+  targetTitle: string;
+  reporterName: string;
   status: "PENDING" | "REVIEWED" | "RESOLVED" | "REJECTED";
   createdAt: string;
 };
 
-const reports: ManagedReport[] = [
-  {
-    id: "report-001",
-    reason: "Fake rental listing",
-    target: "Family flat near main road",
-    reporter: "Customer User",
-    status: "PENDING",
-    createdAt: "May 29, 2026"
-  },
-  {
-    id: "report-002",
-    reason: "Wrong service information",
-    target: "Emergency Electrician",
-    reporter: "Rahim Customer",
-    status: "REVIEWED",
-    createdAt: "May 28, 2026"
-  },
-  {
-    id: "report-003",
-    reason: "Suspicious account",
-    target: "Unknown Provider",
-    reporter: "Admin User",
-    status: "RESOLVED",
-    createdAt: "May 27, 2026"
-  }
-];
+type ReportManagementTableProps = {
+  reports: ManagedReportItem[];
+  isLoading?: boolean;
+  onView?: (id: string) => void;
+  onResolve?: (id: string) => void;
+  onReject?: (id: string) => void;
+};
 
-function getStatusBadge(status: ManagedReport["status"]) {
+function getStatusBadge(status: ManagedReportItem["status"]) {
   if (status === "RESOLVED") {
     return (
       <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
@@ -97,7 +79,13 @@ function getStatusBadge(status: ManagedReport["status"]) {
   );
 }
 
-export function ReportManagementTable() {
+export function ReportManagementTable({
+  reports,
+  isLoading = false,
+  onView,
+  onResolve,
+  onReject
+}: ReportManagementTableProps) {
   return (
     <Card className="border-orange-100 bg-white shadow-sm">
       <CardHeader className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
@@ -105,6 +93,7 @@ export function ReportManagementTable() {
           <p className="text-sm font-bold uppercase tracking-[0.25em] text-orange-400">
             Safety
           </p>
+
           <CardTitle className="mt-1 text-2xl font-black text-slate-950">
             Report Management
           </CardTitle>
@@ -117,67 +106,82 @@ export function ReportManagementTable() {
       </CardHeader>
 
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Reason</TableHead>
-              <TableHead>Target</TableHead>
-              <TableHead>Reporter</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead className="w-[70px]">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-
-          <TableBody>
-            {reports.map((report) => (
-              <TableRow key={report.id}>
-                <TableCell>
-                  <div>
-                    <p className="font-black text-slate-950">
-                      {report.reason}
-                    </p>
-                    <p className="mt-1 text-xs text-slate-500">
-                      ID: {report.id}
-                    </p>
-                  </div>
-                </TableCell>
-
-                <TableCell>{report.target}</TableCell>
-                <TableCell>{report.reporter}</TableCell>
-                <TableCell>{getStatusBadge(report.status)}</TableCell>
-                <TableCell>{report.createdAt}</TableCell>
-
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="size-5" />
-                      </Button>
-                    </DropdownMenuTrigger>
-
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        <Eye className="mr-2 size-4" />
-                        View Details
-                      </DropdownMenuItem>
-
-                      <DropdownMenuItem>
-                        <CheckCircle2 className="mr-2 size-4 text-green-600" />
-                        Mark Resolved
-                      </DropdownMenuItem>
-
-                      <DropdownMenuItem className="text-red-600 focus:text-red-600">
-                        <XCircle className="mr-2 size-4" />
-                        Reject Report
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
+        {isLoading ? (
+          <EmptyState
+            title="Loading reports..."
+            description="Please wait while reports are being fetched."
+          />
+        ) : reports.length === 0 ? (
+          <EmptyState
+            title="No reports found"
+            description="There are no report records available right now."
+          />
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Reason</TableHead>
+                <TableHead>Target</TableHead>
+                <TableHead>Reporter</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead className="w-[70px]">Action</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+
+            <TableBody>
+              {reports.map((report) => (
+                <TableRow key={report.id}>
+                  <TableCell>
+                    <div>
+                      <p className="font-black text-slate-950">
+                        {report.reason}
+                      </p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        ID: {report.id}
+                      </p>
+                    </div>
+                  </TableCell>
+
+                  <TableCell>{report.targetTitle}</TableCell>
+                  <TableCell>{report.reporterName}</TableCell>
+                  <TableCell>{getStatusBadge(report.status)}</TableCell>
+                  <TableCell>{report.createdAt}</TableCell>
+
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="size-5" />
+                        </Button>
+                      </DropdownMenuTrigger>
+
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => onView?.(report.id)}>
+                          <Eye className="mr-2 size-4" />
+                          View Details
+                        </DropdownMenuItem>
+
+                        <DropdownMenuItem onClick={() => onResolve?.(report.id)}>
+                          <CheckCircle2 className="mr-2 size-4 text-green-600" />
+                          Mark Resolved
+                        </DropdownMenuItem>
+
+                        <DropdownMenuItem
+                          className="text-red-600 focus:text-red-600"
+                          onClick={() => onReject?.(report.id)}
+                        >
+                          <XCircle className="mr-2 size-4" />
+                          Reject Report
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </CardContent>
     </Card>
   );
