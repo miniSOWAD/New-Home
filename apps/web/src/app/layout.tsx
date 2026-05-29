@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 
-import "@/app/globals.css";
-import { Navbar } from "@/components/shared/Navbar";
-import { Footer } from "@/components/shared/Footer";
+import "./globals.css";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 
@@ -56,14 +54,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           disableTransitionOnChange
         >
           <QueryProvider>
-            <div className="flex min-h-screen flex-col">
-              <Navbar />
-
-              <main className="flex-1">{children}</main>
-
-              <Footer />
-            </div>
-
+            {children}
             <Toaster richColors position="top-right" />
           </QueryProvider>
         </ThemeProvider>
