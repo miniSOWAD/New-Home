@@ -8,6 +8,7 @@ import {
   Wrench
 } from "lucide-react";
 
+import { SmartSearchBox } from "@/components/ai/SmartSearchBox";
 import { DashboardStatsCard } from "@/components/dashboard/DashboardStatsCard";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
 
@@ -26,6 +27,8 @@ export default function CustomerDashboardPage() {
           communicate with providers, and review completed services.
         </p>
       </div>
+
+      <SmartSearchBox placeholder="Example: Find me a family flat under 12000 or a cook near Mirzapur..." />
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         <DashboardStatsCard
@@ -85,7 +88,7 @@ export default function CustomerDashboardPage() {
               <Search className="mb-4 size-7 text-orange-500" />
               <p className="font-black">Smart Search</p>
               <p className="mt-1 text-sm text-slate-500">
-                AI search will be added with LangChain.
+                AI search will be powered by LangChain.
               </p>
             </div>
           </div>
