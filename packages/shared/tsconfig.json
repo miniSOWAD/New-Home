@@ -2,6 +2,7 @@
   "extends": "../typescript-config/base.json",
   "compilerOptions": {
     "noEmit": true,
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
       "@new-home/shared/*": ["src/*"]
