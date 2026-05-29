@@ -4,6 +4,7 @@
     "rootDir": ".",
     "outDir": "dist",
     "noEmit": false,
+    "ignoreDeprecations": "6.0",
     "baseUrl": "."
   },
   "include": ["src/**/*.ts", "prisma/**/*.ts"],
