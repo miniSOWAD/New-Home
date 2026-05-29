@@ -1,14 +1,46 @@
-import { Settings } from "lucide-react";
-
-import { DashboardComingSoon } from "@/components/dashboard/DashboardComingSoon";
+import { ProfileCard } from "@/components/profile/ProfileCard";
+import { ProfileEditForm } from "@/components/profile/ProfileEditForm";
+import { ChangePasswordForm } from "@/components/profile/ChangePasswordForm";
 
 export default function CustomerProfilePage() {
   return (
-    <DashboardComingSoon
-      title="Customer Profile"
-      description="Customers can update personal information, phone number, location, password, and account preferences."
-      icon={Settings}
-      actionLabel="Edit Profile"
-    />
+    <div className="space-y-8">
+      <div className="rounded-[2rem] bg-gradient-to-br from-orange-500 via-amber-500 to-yellow-400 p-8 text-white shadow-[0_20px_70px_rgba(251,146,60,0.25)]">
+        <p className="text-sm font-bold uppercase tracking-[0.3em] text-white/75">
+          Customer / Profile
+        </p>
+
+        <h1 className="mt-3 text-4xl font-black tracking-tight">
+          Customer Profile
+        </h1>
+
+        <p className="mt-3 max-w-2xl text-white/85">
+          Update your personal information, preferred area, phone number, and
+          password.
+        </p>
+      </div>
+
+      <div className="grid gap-6 xl:grid-cols-[0.8fr_1.2fr]">
+        <ProfileCard
+          name="Customer User"
+          email="customer@newhome.com"
+          phone="+880 1000-000000"
+          address="Mirzapur, Tangail"
+          role="CUSTOMER"
+          approvalStatus="APPROVED"
+        />
+
+        <div className="space-y-6">
+          <ProfileEditForm
+            name="Customer User"
+            email="customer@newhome.com"
+            phone="+880 1000-000000"
+            address="Mirzapur, Tangail"
+          />
+
+          <ChangePasswordForm />
+        </div>
+      </div>
+    </div>
   );
 }
