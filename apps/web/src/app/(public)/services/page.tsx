@@ -9,6 +9,7 @@ import {
   Sparkles
 } from "lucide-react";
 
+import { SmartSearchBox } from "@/components/ai/SmartSearchBox";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { SearchBar } from "@/components/shared/SearchBar";
 import { Card, CardContent } from "@/components/ui/card";
@@ -82,8 +83,10 @@ export default function ServicesPage() {
       />
 
       <section className="section-padding">
-        <div className="container-main">
-          <div className="mb-8 rounded-3xl border bg-card p-5 shadow-sm">
+        <div className="container-main space-y-8">
+          <SmartSearchBox placeholder="Example: I need a part-time cook near Mirzapur for evening..." />
+
+          <div className="rounded-3xl border bg-card p-5 shadow-sm">
             <SearchBar placeholder="Search cook, housemaid, cleaner, driver, electrician..." />
           </div>
 
