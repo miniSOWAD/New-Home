@@ -1,0 +1,62 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: new-home-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: newhome_user
+      POSTGRES_PASSWORD: newhome_password
+      POSTGRES_DB: newhome_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - new_home_postgres_data:/var/lib/postgresql/data
+    networks:
+      - new_home_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U newhome_user -d newhome_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: new-home-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - new_home_redis_data:/data
+    networks:
+      - new_home_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: new-home-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@newhome.com
+      PGADMIN_DEFAULT_PASSWORD: admin12345
+    ports:
+      - "5050:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - new_home_network
+    volumes:
+      - new_home_pgadmin_data:/var/lib/pgadmin
+
+volumes:
+  new_home_postgres_data:
+  new_home_redis_data:
+  new_home_pgadmin_data:
+
+networks:
+  new_home_network:
+    driver: bridge

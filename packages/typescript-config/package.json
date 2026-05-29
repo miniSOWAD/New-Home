@@ -1,0 +1,11 @@
+{
+  "name": "@new-home/typescript-config",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shared TypeScript configurations for New Home.",
+  "files": [
+    "base.json",
+    "nextjs.json",
+    "node.json"
+  ]
+}

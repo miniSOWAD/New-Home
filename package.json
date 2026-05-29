@@ -1,0 +1,43 @@
+{
+  "name": "new-home",
+  "version": "1.0.0",
+  "private": true,
+  "description": "New Home is a full-stack web app for to-let listings and trusted home service providers.",
+  "author": "Md Mahruf Alam",
+  "license": "MIT",
+  "packageManager": "pnpm@9.12.3",
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:web": "turbo run dev --filter=@new-home/web",
+    "dev:server": "turbo run dev --filter=@new-home/server",
+    "build": "turbo run build",
+    "build:web": "turbo run build --filter=@new-home/web",
+    "build:server": "turbo run build --filter=@new-home/server",
+    "start": "turbo run start",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
+    "type-check": "turbo run type-check",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
+    "clean": "turbo run clean && rm -rf node_modules .turbo",
+    "db:generate": "turbo run db:generate --filter=@new-home/database",
+    "db:migrate": "turbo run db:migrate --filter=@new-home/database",
+    "db:push": "turbo run db:push --filter=@new-home/database",
+    "db:studio": "turbo run db:studio --filter=@new-home/database",
+    "db:seed": "turbo run db:seed --filter=@new-home/database",
+    "test": "turbo run test",
+    "test:unit": "turbo run test:unit",
+    "test:integration": "turbo run test:integration",
+    "test:e2e": "turbo run test:e2e"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.19",
+    "prettier": "^3.4.2",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}
