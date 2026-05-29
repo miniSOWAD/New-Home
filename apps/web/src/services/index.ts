@@ -7,3 +7,4 @@ export * from "./message.service";
 export * from "./review.service";
 export * from "./report.service";
 export * from "./ai.service";
+export * from "./dashboard.service";
