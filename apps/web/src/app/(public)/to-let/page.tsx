@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BedDouble, Building2, Home, MapPin, Search } from "lucide-react";
 
+import { SmartSearchBox } from "@/components/ai/SmartSearchBox";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { SearchBar } from "@/components/shared/SearchBar";
 import { Card, CardContent } from "@/components/ui/card";
@@ -50,8 +51,10 @@ export default function ToLetPage() {
       />
 
       <section className="section-padding">
-        <div className="container-main">
-          <div className="mb-8 rounded-3xl border bg-card p-5 shadow-sm">
+        <div className="container-main space-y-8">
+          <SmartSearchBox placeholder="Example: Find me a bachelor room under 6000 near Mirzapur..." />
+
+          <div className="rounded-3xl border bg-card p-5 shadow-sm">
             <SearchBar placeholder="Search by location, rent, or type..." />
           </div>
 
@@ -98,7 +101,7 @@ export default function ToLetPage() {
             ))}
           </div>
 
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-3">
             <Card>
               <CardContent className="p-6">
                 <Home className="mb-4 size-8 text-primary" />
