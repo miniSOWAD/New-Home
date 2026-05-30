@@ -4,7 +4,7 @@
 
 The platform contains two main modules:
 
-1. **To-let Hub** — for house, flat, room, sublet, bachelor seat, family house, office, and shop rentals.
+1. **To-let Hub** — for house, flat, room, sublet, bachelor seat, family house, office and shop rentals.
 2. **Service Pro** — for finding trusted service providers such as cooks, housemaids, cleaners, drivers, electricians, plumbers, tutors, and caregivers.
 
 ---
