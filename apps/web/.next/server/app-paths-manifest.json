@@ -2,8 +2,6 @@
   "/(public)/page": "app/(public)/page.js",
   "/(public)/to-let/page": "app/(public)/to-let/page.js",
   "/(public)/services/page": "app/(public)/services/page.js",
-  "/(public)/about/page": "app/(public)/about/page.js",
-  "/(public)/contact/page": "app/(public)/contact/page.js",
   "/(auth)/auth/login/page": "app/(auth)/auth/login/page.js",
-  "/(public)/services/[id]/page": "app/(public)/services/[id]/page.js"
+  "/(auth)/auth/register/page": "app/(auth)/auth/register/page.js"
 }
