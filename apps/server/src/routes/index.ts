@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { dashboardRouter } from "@modules/dashboard/dashboard.route";
+import { dashboardRouter } from "../modules/dashboard/dashboard.route";
 
 const router = Router();
 
