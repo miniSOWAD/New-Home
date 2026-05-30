@@ -8,15 +8,16 @@
     "target": "ES2022",
     "lib": ["ES2022"],
     "types": ["node", "express"],
-    "ignoreDeprecations": "5.0",
     "baseUrl": "./src",
     "paths": {
       "@/*": ["./*"]
     },
     "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "ignoreDeprecations": "5.0"
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*.ts", "src/**/*.d.ts"],
+  "exclude": ["node_modules", "dist", "prisma"]
 }
